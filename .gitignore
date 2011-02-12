@@ -1,0 +1,22 @@
+# OSX
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Eclipse
+.cache
+.cache/*
+.settings
+.settings/*
+*.class
+bin
+
+# Archives / packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
