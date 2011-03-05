@@ -163,10 +163,181 @@ button {  width: auto; overflow: visible; }
 /**
  * Primary styles.
  *
- * Author: 
+ * Author: Joe McCann
  */
 
 
+body{
+	background: #f1eee6 url('/img/static_bg_stripe_6x383.png') repeat-x scroll top left;
+	color:#222222;
+	font-family: Droid Sans, 'Droid Sans', HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+p{
+	font-size: 1.2em;
+	line-height: 1.6em;
+}
+
+h2{
+	font-size:1.6em;
+	line-height:2em;
+}
+
+
+ul{
+	margin:0;
+}
+
+li{
+	margin:5px 0;
+	padding:5px 10px;
+	background:#fafafa;
+	border-radius:6px;
+	list-style:none;
+}
+
+.hide{
+	display:none;
+}
+
+#container{
+	margin:0 auto;
+	padding:80px 20px 20px;
+	width:1000px;
+}
+
+#main-left{
+/*	-webkit-box-shadow: #aaa 0 2px 0;*/
+	height:480px;
+	width:420px;
+/*	background-color:#f2f3e7;*/
+	float:left;
+}
+
+#main-right{
+	float:left;
+	width:510px;
+	padding-left:30px;
+}
+
+#list{
+	max-height:400px;
+}
+
+header{
+	font-size:3.6em;
+	letter-spacing:	-2px;
+	font-style: italic;
+	margin-top:100px;
+}
+
+#container-intro-copy{
+	padding:20px 0 10px 3px;
+	width:345px;
+}
+
+#container-intro-copy p:first-child{
+	padding-bottom:10px;
+}
+
+.button-container{
+	margin:180px auto 0;
+	width:300px;
+}
+
+
+.rad-button{
+	background:#fff;
+	
+	background: --moz-linear-gradient(top, #b17029 0%, #edca6f 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b17029), color-stop(100%,#edca6f)); /* webkit */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b17029', endColorstr='#edca6f',GradientType=0 ); /* ie */
+	
+	
+	font-size:2.8em;
+	font-family: Droid Sans, 'Droid Sans', HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	padding:10px 5px;
+	border: none;
+	border-radius: 6px;
+	khtml-border-radius: 6px;
+	-moz-border-radius: 6px;
+	webkit-border-radius: 6px;
+	width:300px;
+	-webkit-box-shadow: #aaa 2px 2px 0;
+	color:#7b511e;
+	-webkit-transition:all .7s;
+}
+
+.rad-button:hover, .rad-button:focus{
+	-webkit-transition:all .7s;
+	color:#f2f3e7;
+	background-color:#7b511e;
+	
+	background: --moz-linear-gradient(top, #edca6f 0%, #b17029 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#edca6f), color-stop(100%,#b17029)); /* webkit */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b17029', endColorstr='#edca6f',GradientType=0 ); /* ie */
+	
+}
+
+#fetch{
+	margin:180px auto 0;
+	width:420px;
+	background-color: transparent;
+	opacity:0.75;
+}
+
+div.spinner {
+      position: relative;
+      margin: 0 180px;
+      width: 48px;
+      height: 48px;
+      display: inline-block;
+    }
+    
+    div.spinner div {
+      width: 12%;
+      height: 26%;
+      background: #b17029;
+      position: absolute;
+      left: 44.5%;
+      top: 37%;
+      opacity: 0;
+      -webkit-animation: fade 1s linear infinite;
+      -webkit-border-radius: 50px;
+      -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    }
+    
+    div.spinner div.bar1 {-webkit-transform:rotate(0deg) translate(0, -142%); -webkit-animation-delay: 0s;}    
+    div.spinner div.bar2 {-webkit-transform:rotate(30deg) translate(0, -142%); -webkit-animation-delay: -0.9167s;}
+    div.spinner div.bar3 {-webkit-transform:rotate(60deg) translate(0, -142%); -webkit-animation-delay: -0.833s;}
+    div.spinner div.bar4 {-webkit-transform:rotate(90deg) translate(0, -142%); -webkit-animation-delay: -0.75s;}
+    div.spinner div.bar5 {-webkit-transform:rotate(120deg) translate(0, -142%); -webkit-animation-delay: -0.667s;}
+    div.spinner div.bar6 {-webkit-transform:rotate(150deg) translate(0, -142%); -webkit-animation-delay: -0.5833s;}
+    div.spinner div.bar7 {-webkit-transform:rotate(180deg) translate(0, -142%); -webkit-animation-delay: -0.5s;}
+    div.spinner div.bar8 {-webkit-transform:rotate(210deg) translate(0, -142%); -webkit-animation-delay: -0.41667s;}
+    div.spinner div.bar9 {-webkit-transform:rotate(240deg) translate(0, -142%); -webkit-animation-delay: -0.333s;}
+    div.spinner div.bar10 {-webkit-transform:rotate(270deg) translate(0, -142%); -webkit-animation-delay: -0.25s;}
+    div.spinner div.bar11 {-webkit-transform:rotate(300deg) translate(0, -142%); -webkit-animation-delay: -0.1667s;}
+    div.spinner div.bar12 {-webkit-transform:rotate(330deg) translate(0, -142%); -webkit-animation-delay: -0.0833s;}
+ 
+     @-webkit-keyframes fade {
+      from {opacity: 1;}
+      to {opacity: 0.25;}
+    }
+
+@media all and (min-width: 534px){
+	
+}
+
+
+
+@media all and (max-width: 533px){
+	
+}
+
+@media all and (max-width: 320px){
+	
+}
 
 
 
