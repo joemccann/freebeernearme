@@ -6,24 +6,24 @@
 <version>1.0</version>
 <publisher>joe.mccann</publisher>
 <url>http://freebeernear.me</url>
-<icon>default_app_logo.png</icon>
+<icon>app_icon.png</icon>
 <copyright>2011 by joe.mccann</copyright>
 <!-- Window Definition - these values can be edited -->
 <window>
 <id>initial</id>
 <title>fbnm</title>
 <url>app://index.html</url>
-<width>700</width>
-<max-width>3000</max-width>
+<width>880</width>
+<max-width>0</max-width>
 <min-width>0</min-width>
-<height>500</height>
-<max-height>3000</max-height>
+<height>520</height>
+<max-height>0</max-height>
 <min-height>0</min-height>
 <fullscreen>false</fullscreen>
-<resizable>true</resizable>
+<resizable>false</resizable>
 <chrome scrollbars="true">true</chrome>
-<maximizable>true</maximizable>
-<minimizable>true</minimizable>
+<maximizable>false</maximizable>
+<minimizable>false</minimizable>
 <closeable>true</closeable>
 </window>
 </ti:app>

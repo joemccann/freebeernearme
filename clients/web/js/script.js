@@ -21,7 +21,6 @@ $(function(){
 		if(offline)
 		{
 			locale = {latitude: 30.97, longitude: -122.92}
-			
 		}
 		else
 		{
@@ -30,6 +29,16 @@ $(function(){
 		}
 	}
 	else{
+
+		if(offline)
+		{
+			locale = {latitude: 30.97, longitude: -122.92}
+			var notify = Titanium.Notification.createNotification();
+			notify.setTitle("Free Beer Near Me")
+			notify.setMessage("Your location was found!")
+			notify.setIcon("/img/beer.png")
+			notify.show();
+		}
 
 		// Let's try by IP
 		// Build the URL to query
@@ -213,31 +222,44 @@ $(function(){
 			});
 		});
 	}
+
+	$('#fill').bind('click', closeModal);
+
+	// TODO: Add esc key
+	$(document.body).bind('keypress', function(e){
+		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
+	});
 	
 	function createList(data)
 	{
-		var list = "<h2>Search Results:</h2><ul class='beer-locations'>";
+		var list = "<h2>Search Results:</h2><div id='list-wrap'><ul class='beer-locations'>";
+		var geoIterator = 0
 		data.results.forEach(function(el, index){
 			if(el.geo != null)
 			{
+				// Show at most 5 results?  Remove this line if you want all and an ugly overflowing container w/scrollbars.
+				if(geoIterator < 5)
+				{
+					geoIterator++;
+					//<a href="http://maps.google.com/maps?daddr=San+Francisco,+CA&saddr=cupertino">Directions</a>
 
-				//<a href="http://maps.google.com/maps?daddr=San+Francisco,+CA&saddr=cupertino">Directions</a>
+					var startAddress 				= locale.latitude+","+locale.longitude;
+					var destinationAddress 	=	el.location.replace(' ', ''); 
+					var link = '<a target="_blank" href="http://maps.google.com/maps?dirflg=w&daddr='
+											+destinationAddress
+											+'&saddr='+ startAddress 
+											+'">' 
+											+el.text
+											+ '</a>';
 
-				var startAddress 				= locale.latitude+","+locale.longitude;
-				var destinationAddress 	=	el.location.replace(' ', ''); 
-				var link = '<a target="_blank" href="http://maps.google.com/maps?dirflg=w&daddr='
-										+destinationAddress
-										+'&saddr='+ startAddress 
-										+'">' 
-										+el.text
-										+ '</a>';
+					//link = (isGapped || isAndroid) ? "<a href='geo:"+el.location.replace(' ', '')+"?z=20'>" +el.text+ "</a>" : "<a href='geo:"+el.location+"'>" +el.text+ "</a>";
 
-				//link = (isGapped || isAndroid) ? "<a href='geo:"+el.location.replace(' ', '')+"?z=20'>" +el.text+ "</a>" : "<a href='geo:"+el.location+"'>" +el.text+ "</a>";
+					list += "<li class='tweet-location' data-location='"+el.location+"'>"+ link +"</li>";
+				} 
 
-				list += "<li class='tweet-location' data-location='"+el.location+"'>"+ link +"</li>";
 			}
 		})
-		list += "</ul>";
+		list += "</ul></div>";
 		return list;
 	}
 	
@@ -252,12 +274,6 @@ $(function(){
 		}
 	}
 	
-	$('#fill').bind('click', closeModal);
-
-	// TODO: Add esc key
-	$(document.body).bind('keypress', function(e){
-		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
-	});
 
 	// http://www.dynamicdrive.com/dynamicindex17/iframessi2.htm
 	function resizeIframe()
@@ -279,6 +295,10 @@ $(function(){
 	}
 	}
 
+
+	setTimeout(function(){
+		$('#subprint').fadeIn(3000);
+	}, 1000)
 
 	
 })
