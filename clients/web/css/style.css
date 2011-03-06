@@ -375,7 +375,7 @@ header span span:hover, header span span:focus {
 
 div.spinner {
       position: relative;
-      margin: 0 180px;
+      margin: 0 140px;
       width: 48px;
       height: 48px;
       display: inline-block;
