@@ -6,21 +6,28 @@ var	isGapped = false,
 		isTitanium = false, 
 		locale = {};
 
+var offline = true;
+
 $(function(){
 	isTitanium = (typeof window.Titanium === 'object') ? true : false;
 	
 	isMobile = /mobile/i.test(navigator.userAgent);
 
 	isAndroid = /android/i.test(navigator.userAgent);
-/*
-http://maps.google.com/maps?f=d&source=s_d&saddr=30,-97&daddr=austin,tx&geocode=FYDDyQEdwOU3-g%3BFRHXzQEdK48s-ikvA8ygmbVEhjF61WnUS0abXQ&hl=en&mra=ltm&dirflg=w&sll=30.133251,-97.377319&sspn=0.733998,1.448822&ie=UTF8&ll=30.133251,-97.377319&spn=0.733998,1.448822&z=10
-http://maps.google.com/maps?f=d&source=s_d&saddr=30,-97&daddr=austin,tx&geocode=FYDDyQEdwOU3-g%3BFRHXzQEdK48s-ikvA8ygmbVEhjF61WnUS0abXQ&hl=en&mra=ltm&sll=30.133251,-97.377319&sspn=0.733998,1.448822&ie=UTF8&ll=30.133251,-97.375946&spn=0.733998,1.448822&z=10
-	*/
 	// Get location.
 	if(!!navigator.geolocation && !isGapped && !isTitanium)
 	{
-		navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
-//		navigator.geolocation.watchPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
+		// For testing with no wifi on the plane.
+		if(offline)
+		{
+			locale = {latitude: 30.97, longitude: -122.92}
+			
+		}
+		else
+		{
+					navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
+			//		navigator.geolocation.watchPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
+		}
 	}
 	else{
 
@@ -111,69 +118,168 @@ http://maps.google.com/maps?f=d&source=s_d&saddr=30,-97&daddr=austin,tx&geocode=
 		// Some weak hacks to make the url play nice with express GET routes.
 		// TODO: CLEAN THIS UP SO IT'S NOT LOCAL...NEEDS TO REFLECT ACTUAL WEBSITE.
 		var url = isTitanium ? 'http://'+ Titanium.Network.getAddress() +':7575/api/gettweets/' : '/api/gettweets/';
-		alert(url)
-		$.get( url + 
-				locale.latitude.replace('.', '_').replace('-', '*') +
-				'/'+
-				locale.longitude.replace('.', '_').replace('-', '*'), 
-			
-			function(data){
-
+		
+		if(offline)
+		{
+			$.get('/testing.json', function(data){
+				
 				if( $('#fetch').is(':visible') )
 				{
 					$('#fetch').fadeOut(200, function(){
 
 						//console.log(data)
-						
+
 						if(!data.results.length)
 						{
 							alert("No results for your location!")
 						}
 						else
 						{
-							var list = "<h2>Search Results:</h2><ul class='beer-locations'>";
-							data.results.forEach(function(el, index){
-								if(el.geo != null)
-								{
+							var list = createList(data);
 
-									//<a href="http://maps.google.com/maps?daddr=San+Francisco,+CA&saddr=cupertino">Directions</a>
+							appendList(list);	
 
-									var startAddress 				= locale.latitude+","+locale.longitude;
-									var destinationAddress 	=	el.location.replace(' ', ''); 
-									var link = '<a target="_blank" href="http://maps.google.com/maps?dirflg=w&daddr='
-															+destinationAddress
-															+'&saddr='+ startAddress 
-															+'">' 
-															+el.text
-															+ '</a>';
-									
-									//link = (isGapped || isAndroid) ? "<a href='geo:"+el.location.replace(' ', '')+"?z=20'>" +el.text+ "</a>" : "<a href='geo:"+el.location+"'>" +el.text+ "</a>";
-									
-									list += "<li class='tweet-location' data-location='"+el.location+"'>"+ link +"</li>";
-								}
-							})
-							list += "</ul>";
-							
-							$('#list').append(list).fadeIn(200, function(){
-								$('.tweet-location').live('click', function(){
-									
-									// If Android/mobile, create anchor tags with map:// scheme
-									
-									var location = $(this).attr('data-location');
-									//console.log(location + " is the location from the data attribute.");
-									
-									// TODO: Create map with your location and the location of the free beer tweet.
-									
-								})
-							});
-							
 						}
-						
-					})
+
+					});
 				}
+				
+			})
+		}
+		else
+		{
+			$.get( url + 
+					locale.latitude.replace('.', '_').replace('-', '*') +
+					'/'+
+					locale.longitude.replace('.', '_').replace('-', '*'), 
+
+				function(data){
+
+					if( $('#fetch').is(':visible') )
+					{
+						$('#fetch').fadeOut(200, function(){
+
+							//console.log(data)
+
+							if(!data.results.length)
+							{
+								alert("No results for your location!")
+							}
+							else
+							{
+								var list = createList(data);
+
+								appendList(list);	
+
+							}
+
+						});
+					}
+			});
 			
-		})
+		}
+		
+	
+	} // end pollTwitter
+	
+	function appendList(list)
+	{
+		$('#list').append(list).fadeIn(200, function(){
+			$('.tweet-location > a').live('click', function(){
+
+				// If Android/mobile, create anchor tags with map:// scheme
+
+				var href = this.href;
+				var location = $(this).attr('data-location');
+				//console.log(location + " is the location from the data attribute.");
+
+				if(isMobile || isGapped)
+				{
+					// Let device open Google Maps.
+				}
+				else
+				{
+					// Show modal (weak sauce, modals are lame, but I'm strapped for time)
+					$('#fill').fadeIn(200, function(){
+						$('#map-frame').append("<iframe id='current-iframe' width='800' height='600' frameborder='1' scrolling='auto' src='" + href + "'></iframe>").fadeIn(200, function(){
+								//resizeIframe();
+						})
+
+					});
+
+				}
+				return false;
+
+			});
+		});
 	}
+	
+	function createList(data)
+	{
+		var list = "<h2>Search Results:</h2><ul class='beer-locations'>";
+		data.results.forEach(function(el, index){
+			if(el.geo != null)
+			{
+
+				//<a href="http://maps.google.com/maps?daddr=San+Francisco,+CA&saddr=cupertino">Directions</a>
+
+				var startAddress 				= locale.latitude+","+locale.longitude;
+				var destinationAddress 	=	el.location.replace(' ', ''); 
+				var link = '<a target="_blank" href="http://maps.google.com/maps?dirflg=w&daddr='
+										+destinationAddress
+										+'&saddr='+ startAddress 
+										+'">' 
+										+el.text
+										+ '</a>';
+
+				//link = (isGapped || isAndroid) ? "<a href='geo:"+el.location.replace(' ', '')+"?z=20'>" +el.text+ "</a>" : "<a href='geo:"+el.location+"'>" +el.text+ "</a>";
+
+				list += "<li class='tweet-location' data-location='"+el.location+"'>"+ link +"</li>";
+			}
+		})
+		list += "</ul>";
+		return list;
+	}
+	
+	function closeModal()
+	{
+		if( $('#fill').is(":visible") )
+		{
+			$('#map-frame').fadeOut(200, function(){
+				$('#map-frame').find('iframe').remove();
+				$('#fill').fadeOut(200);
+			})
+		}
+	}
+	
+	$('#fill').bind('click', closeModal);
+
+	// TODO: Add esc key
+	$(document.body).bind('keypress', function(e){
+		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
+	});
+
+	// http://www.dynamicdrive.com/dynamicindex17/iframessi2.htm
+	function resizeIframe()
+	{
+		var currentfr=document.getElementById('current-iframe')
+		if (currentfr && !window.opera){
+		currentfr.style.display="block"
+		if (currentfr.contentDocument && currentfr.contentDocument.body.offsetHeight) //ns6 syntax
+		currentfr.height = currentfr.contentDocument.body.offsetHeight+FFextraHeight; 
+		else if (currentfr.Document && currentfr.Document.body.scrollHeight) //ie5+ syntax
+		currentfr.height = currentfr.Document.body.scrollHeight;
+		if (currentfr.addEventListener)
+		currentfr.addEventListener("load", readjustIframe, false)
+		else if (currentfr.attachEvent)
+		{
+		currentfr.detachEvent("onload", readjustIframe) // Bug fix line
+		currentfr.attachEvent("onload", readjustIframe)
+		}
+	}
+	}
+
+
 	
 })
 
