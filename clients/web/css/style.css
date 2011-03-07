@@ -441,10 +441,20 @@ div.spinner {
 		letter-spacing: -2px;
 		line-height: 1em;
 		font-style: italic;
-		margin-top: 5px;
+		margin: 5px auto;
 		float: none;
 		width: auto;
 		padding-left: 0;
+	}
+	
+	.line1, .line2
+	{
+		display: inline;
+		margin-top:5px;
+	}
+	
+	.char1, .char6, .char11, .char16{
+		font-size:72px;
 	}
 	
 	#main-left {
@@ -468,7 +478,7 @@ div.spinner {
 	}
 	
 	#container-intro-copy {
-		clear: none;
+		clear: both;
 		text-align:center;
 		padding: 15px 0 10px 16px;
 		margin:0 auto;
@@ -511,6 +521,10 @@ div.spinner {
 		height:28px;
 	}
 	
+	#list-wrap
+	{
+		padding:0 30px;
+	}
 	
 }
 
