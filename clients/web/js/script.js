@@ -337,7 +337,8 @@ $(function(){
 	$('#fill').bind('click', closeModal);
 
 	// TODO: Add esc key
-	$(document.body).bind('keydown', function(e){
+	$(window).bind('keydown', function(e){
+		// escape key or space bar
 		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
 	});
 	
