@@ -13,10 +13,10 @@
 <id>initial</id>
 <title>fbnm</title>
 <url>app://index.html</url>
-<width>880</width>
+<width>980</width>
 <max-width>0</max-width>
 <min-width>0</min-width>
-<height>520</height>
+<height>720</height>
 <max-height>0</max-height>
 <min-height>0</min-height>
 <fullscreen>false</fullscreen>
