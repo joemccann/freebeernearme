@@ -21,7 +21,7 @@ app.configure('production', function(){
 
 var manifest = {
 	uri:{
-		twitter: "http://search.twitter.com/search.json?q={query}&rpp=1000&geocode={lat},{long},10mi"
+		twitter: "http://search.twitter.com/search.json?q={query}&rpp=1000&geocode={lat},{long},1000mi"
 	}
 }
 
@@ -36,7 +36,7 @@ function createGeoTweetUri(q,lat,lon)
 /**
  * @desc Route to handle/proxy geotweet request to twitter.
  * Note: In the curl, we add underscores and asterisks which are then replaced so you can test the url in the browser.
- * curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET http://loc:7575/api/gettweets/37_786000/*122_402400 | jsonpretty
+ * curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET http://freebeernear.me/api/gettweets/37_786000/*122_402400 | jsonpretty
  */
 app.get('/api/gettweets/:lat/:lon', function(req,res,next){
 	
