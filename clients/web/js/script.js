@@ -10,6 +10,31 @@ var	isGapped = false,
 
 var offline = false;
 
+	
+	/*
+	* @desc Programmatically center the map frame on the screen based on viewable screen size.
+	* @param Object (optional)
+	*/
+	function positionMapFrame()
+	{
+		var maxW = window.innerWidth, 
+				maxH = window.innerHeight, 
+				frameW = $('#map-frame').width(), 
+				frameH = $('#map-frame').height(),
+				position = {};
+    
+		if(maxW < frameW) position = {left:0};
+		else
+		{
+			// if maxW = 1200 and frameW = 800
+			// (maxW-frameW)/2 = 200, left = 200;
+			position = { left:(maxW-frameW)/2 + "px", top:"20px"}
+		}
+		$('#map-frame').css(position);
+
+	}
+
+
 $(function(){
 	
 	function whereYat()
@@ -286,6 +311,7 @@ $(function(){
 		}
 	}
 
+	// Big up @slexaxton
 	function yeahNo()
 	{
 		isTitanium = (typeof window.Titanium === 'object') ? true : false;
@@ -294,23 +320,6 @@ $(function(){
 		isLocalhost = /loc/.test(location.hostname);
 	}
 
-	function init()
-	{
-		yeahNo();
-		whereYat();
-		loadjQueryUi();
-		positionMapFrame();
-		
-		$('header').lettering('lines');
-		$('.line1, .line2').lettering();
-		
-		// Some nice branding, eh?
-		setTimeout(function(){
-			$('#subprint').fadeIn(3000);
-		}, 1000)		
-		
-	}
-	
 	function bindFindBeerButton(state)
 	{
 
@@ -337,29 +346,7 @@ $(function(){
 		
 	}
 	
-	/*
-	* @desc Programmatically center the map frame on the screen based on viewable screen size.
-	* @param Object (optional)
-	*/
-	function positionMapFrame()
-	{
-		var maxW = window.innerWidth, 
-				maxH = window.innerHeight, 
-				frameW = $('#map-frame').width(), 
-				frameH = $('#map-frame').height(),
-				position = {};
-    
-		if(maxW < frameW) position = {left:0};
-		else
-		{
-			// if maxW = 1200 and frameW = 800
-			// (maxW-frameW)/2 = 200, left = 200;
-			position = { left:(maxW-frameW)/2 + "px", top:"20px"}
-		}
-		$('#map-frame').css(position);
-
-	}
-	
+	// Do we need this?  Maybe, fuck it...you finish it...
 	function sizeMapFrame()
 	{
 	
@@ -376,6 +363,17 @@ $(function(){
 			// 
 		}
 		
+	}
+
+	function init()
+	{
+		yeahNo();
+		whereYat();
+		loadjQueryUi();
+		positionMapFrame();
+		
+		$('header').lettering('lines');
+		$('.line1, .line2').lettering();
 	}
 	
 	// Bindings...
@@ -416,6 +414,9 @@ $(function(){
 window.onresize = function()
 {
 	// jQuery UI Resizable stuff.
+	
+	// map frame ish as well....
+	positionMapFrame();
 }
 
 window.onload = function ()
@@ -426,7 +427,10 @@ window.onload = function ()
 		window.scrollTo(0, 1);
 	}, 1000);
 
-    document.addEventListener('deviceready', function ()
+	// Some nice branding, eh?
+	setTimeout(function(){ $('#subprint').fadeIn(3000)}, 1000);		
+	
+	document.addEventListener('deviceready', function ()
     {
         if ( !!(device.platform) )
         {
@@ -437,7 +441,11 @@ window.onload = function ()
 							// Make them strings...
 							locale.latitude = position.coords.latitude + "";  
 							locale.longitude = position.coords.longitude + "";
-						  console.log('\nLatitude: '          + position.coords.latitude          + '\n' +
+						  // #protip, in a shell do the following:  
+							//  adb logcat -c && clear && adb logcat PhoneGapLog:V *:E
+							// and you'll see all the phonegap console.log() calls.
+							console.log(
+											'\nLatitude: '          + position.coords.latitude          + '\n' +
 						          'Longitude: '         + position.coords.longitude         + '\n' +
 						          'Altitude: '          + position.coords.altitude          + '\n' +
 						          'Accuracy: '          + position.coords.accuracy          + '\n' +
