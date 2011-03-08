@@ -8,6 +8,30 @@
       <src_folder value="file://$MODULE_DIR$/gen" expected_position="1" />
     </src_description>
   </component>
+  <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="PLATFORM_NAME" value="Android 2.2 Platform(1)" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_APT" value="/gen" />
+        <option name="GEN_FOLDER_RELATIVE_PATH_AIDL" value="/gen" />
+        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/AndroidManifest.xml" />
+        <option name="RES_FOLDER_RELATIVE_PATH" value="/res" />
+        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/assets" />
+        <option name="LIBS_FOLDER_RELATIVE_PATH" value="/libs" />
+        <option name="REGENERATE_R_JAVA" value="true" />
+        <option name="REGENERATE_JAVA_BY_AIDL" value="true" />
+        <option name="USE_CUSTOM_APK_RESOURCE_FOLDER" value="false" />
+        <option name="CUSTOM_APK_RESOURCE_FOLDER" value="" />
+        <option name="USE_CUSTOM_COMPILER_MANIFEST" value="false" />
+        <option name="CUSTOM_COMPILER_MANIFEST" value="" />
+        <option name="APK_PATH" value="" />
+        <option name="ADD_ANDROID_LIBRARY" value="true" />
+        <option name="LIBRARY_PROJECT" value="false" />
+        <option name="RUN_PROCESS_RESOURCES_MAVEN_TASK" value="true" />
+        <option name="GENERATE_UNSIGNED_APK" value="false" />
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/bin" />
     <exclude-output />
@@ -17,8 +41,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK" level="application" />
-    <orderEntry type="module-library">
+    <orderEntry type="library" exported="" name="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK" level="application" />
+    <orderEntry type="module-library" exported="">
       <library name="phonegap-0.9.3.jar">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/phonegap-0.9.3.jar!/" />
@@ -27,6 +51,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" scope="PROVIDED" name="Android 2.2 Platform(1)" level="application" />
+    <orderEntry type="library" exported="" name="Phonegap" level="project" />
   </component>
 </module>
 

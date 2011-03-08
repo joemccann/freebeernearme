@@ -3,7 +3,9 @@
 var	isGapped = false, 
 		isMobile = false, 
 		isAndroid = false,
-		isTitanium = false, 
+		isTitanium = false,
+		isLocalhost = false,
+		hasjQueryUi = false, 
 		locale = {};
 
 var offline = false;
@@ -22,7 +24,7 @@ $(function(){
 			}
 			else
 			{
-						navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
+						navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 30000, enableHighAccuracy: true });
 
 				//		navigator.geolocation.watchPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
 			}
@@ -87,6 +89,9 @@ $(function(){
 	{
 		locale.latitude = p.coords.latitude.toFixed(4);
 		locale.longitude = p.coords.longitude.toFixed(4);
+		
+		bindFindBeerButton(true);
+		
 		//showLocaleInfo();
 	}
 
@@ -102,6 +107,7 @@ $(function(){
 					default:
 						alert('Something just aint right.')
 	    };
+			bindFindBeerButton(false);
 	}
 
 	function showLocaleInfo()
@@ -119,8 +125,9 @@ $(function(){
 	function pollTwitter(cb)
 	{
 		// Some weak hacks to make the url play nice with express GET routes.
-		// TODO: CLEAN THIS UP SO IT'S NOT LOCAL...NEEDS TO REFLECT ACTUAL WEBSITE.
-		var url = isTitanium ? 'http://'+ Titanium.Network.getAddress() +':7575/api/gettweets/' : '/api/gettweets/';
+		var url = isLocalhost ? '/api/gettweets/' : 'http://freebeernear.me/api/gettweets/';
+		
+		console.log("postUrl: "+  url)
 		
 		if(offline)
 		{
@@ -234,25 +241,45 @@ $(function(){
 			})
 		}
 	}
-	
-	// http://www.dynamicdrive.com/dynamicindex17/iframessi2.htm
-	function resizeIframe()
+
+	function loadjQueryUi()
 	{
-		var currentfr=document.getElementById('current-iframe')
-		if (currentfr && !window.opera)
+		
+		if(window.innerWidth > 540 && !hasjQueryUi)
 		{
-			currentfr.style.display="block"
-			if (currentfr.contentDocument && currentfr.contentDocument.body.offsetHeight) //ns6 syntax
-			currentfr.height = currentfr.contentDocument.body.offsetHeight+FFextraHeight; 
-			else if (currentfr.Document && currentfr.Document.body.scrollHeight) //ie5+ syntax
-			currentfr.height = currentfr.Document.body.scrollHeight;
-			if (currentfr.addEventListener)
-			currentfr.addEventListener("load", readjustIframe, false)
-			else if (currentfr.attachEvent)
-			{
-				currentfr.detachEvent("onload", readjustIframe) // Bug fix line
-				currentfr.attachEvent("onload", readjustIframe)
-			}
+			(function(d,t){
+				var g=d.createElement(t),
+						s=d.getElementsByTagName(t)[0];
+						g.async=1;
+	    	g.src= (isLocalhost) ? '/js/libs/jquery-ui-1.8.10.custom.min.js' : 'http://freebeernear.me/js/libs/jquery-ui-1.8.10.custom.min.js';
+	    	s.parentNode.insertBefore(g,s)
+				g.onload = function(){
+					$('#map-frame').resizable({
+				        start: function(e, ui) {
+				        },
+				        resize: function(e, ui) {
+
+				        },
+				        stop: function(e, ui) {
+				        }
+				    })
+						.draggable();
+				}
+				hasjQueryUi = true;
+			
+			}(document,'script'));
+			
+						(function(d,t){
+							var g=d.createElement(t),
+									s=d.getElementsByTagName(t)[0];
+									g.async=1;
+				    	g.href= 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css';
+							g.rel = 'stylesheet';
+							g.type = 'text/css';
+				    	s.parentNode.insertBefore(g,s)
+						}(document,'link'));
+
+			
 		}
 	}
 
@@ -261,12 +288,16 @@ $(function(){
 		isTitanium = (typeof window.Titanium === 'object') ? true : false;
 		isMobile = /mobile/i.test(navigator.userAgent);
 		isAndroid = /android/i.test(navigator.userAgent);
+		isLocalhost = /loc/.test(location.hostname);
 	}
 
 	function init()
 	{
 		yeahNo();
 		whereYat();
+		loadjQueryUi();
+		
+		
 		$('header').lettering('lines');
 		$('.line1, .line2').lettering();
 		
@@ -276,30 +307,37 @@ $(function(){
 		
 	}
 	
-	// Bindings...
-	
-	$('#find-beer').bind('click', function(e){
-		//alert(locale.latitude)
-		if( locale.latitude == undefined ) 
-		{
-			alert("Sorry, we can't find your location.  Maybe try again...")
-			return false;
-		}
-		
-		$(this).fadeOut(200, function(){
-			$('#fetch').fadeIn(200, function(){
-				pollTwitter();
+	function bindFindBeerButton(state)
+	{
+
+		$('#find-beer')
+			.find('button')
+			.text( !state ? "Unavailable :(" : "Find Beer Nao!")
+			.bind('click', function(e){
+			//alert(locale.latitude)
+			if( locale.latitude == undefined || !state ) 
+			{
+				alert("Sorry, we can't find your location.  Maybe try again...")
+				return false;
+			}
+
+			$('#find-beer').fadeOut(200, function(){
+				$('#fetch').fadeIn(200, function(){
+					pollTwitter();
+				});
 			});
+
+			return false;
+
 		});
 		
-		return false;
-		
-	});
+	}
 	
+	// Bindings...
 	$('#fill').bind('click', closeModal);
 
 	// TODO: Add esc key
-	$(document.body).bind('keypress', function(e){
+	$(document.body).bind('keydown', function(e){
 		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
 	});
 	
@@ -317,10 +355,7 @@ $(function(){
 		{
 			// Show modal (weak sauce, modals are lame, but I'm strapped for time)
 			$('#fill').fadeIn(200, function(){
-				$('#map-frame').append("<iframe id='current-iframe' width='800' height='600' frameborder='1' scrolling='auto' src='" + href + "'></iframe>").fadeIn(200, function(){
-						//resizeIframe();
-				})
-
+				$('#map-frame').append("<iframe id='current-iframe' width='98%' height='98%' frameborder='0' scrolling='no' src='" + href + "'></iframe>").fadeIn(200)
 			});
 
 		}
@@ -328,12 +363,14 @@ $(function(){
 
 	});
 	
-	
-	
-
 	init();
 	
 })
+
+window.onresize = function()
+{
+	// jQuery UI Resizable stuff.
+}
 
 window.onload = function ()
 {
@@ -349,9 +386,12 @@ window.onload = function ()
         {
             // So we are on the Android device.
             isGapped = true;
-
+						
 						var onSuccess = function(position) {
-						    alert('Latitude: '          + position.coords.latitude          + '\n' +
+							// Make them strings...
+							locale.latitude = position.coords.latitude + "";  
+							locale.longitude = position.coords.longitude + "";
+						  console.log('\nLatitude: '          + position.coords.latitude          + '\n' +
 						          'Longitude: '         + position.coords.longitude         + '\n' +
 						          'Altitude: '          + position.coords.altitude          + '\n' +
 						          'Accuracy: '          + position.coords.accuracy          + '\n' +
@@ -369,7 +409,7 @@ window.onload = function ()
 						}
 						
 					
-						//navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
+						navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
 				}
     }, false);
 }

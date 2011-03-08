@@ -220,13 +220,13 @@ ul li:first-child
 #container{
 	margin:0 auto;
 	padding:25px 20px 20px;
-	width:910px;
+	width:800px;
 }
 
 #main-left{
 /*	-webkit-box-shadow: #aaa 0 2px 0;*/
 	height:480px;
-	width:480px;
+	width:400px;
 /*	background-color:#f2f3e7;*/
 	float:left;
 }
@@ -248,11 +248,20 @@ ul li:first-child
 }
 
 #map-frame{
+	background-color:#fff;
+	border:8px #555 solid;
+	border-radius:6px;
+	width:800px;
+	height:600px;
 	position:absolute;
 	top:30px;
 	left:25%;
 	z-index:2;
-	overflow:auto;
+	cursor:move;
+}
+
+iframe{
+	padding:0 30px 30px 0;
 }
 
 #list{
@@ -276,7 +285,6 @@ header{
 	font-style: italic;
 	margin-top: 54px;
 	float: left;
-	width: 320px;
 	padding-left: 20px;
 	font-size: 42px;
 }
