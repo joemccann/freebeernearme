@@ -152,7 +152,7 @@ $(function(){
 	**/
 	function pollTwitter(cb)
 	{
-		// Some weak hacks to make the url play nice with express GET routes.
+		// Some weak hacks to make the url play nice with Express GET routes.
 		var url = isLocalhost ? '/api/gettweets/' : 'http://freebeernear.me/api/gettweets/';
 		
 		console.log("postUrl: "+  url)
@@ -317,7 +317,7 @@ $(function(){
 		isTitanium = (typeof window.Titanium === 'object') ? true : false;
 		isMobile = /mobile/i.test(navigator.userAgent);
 		isAndroid = /android/i.test(navigator.userAgent);
-		isLocalhost = /loc/.test(location.hostname);
+		isLocalhost = /(loc|192)/.test(location.hostname);
 	}
 
 	function bindFindBeerButton(state)
@@ -453,6 +453,11 @@ window.onload = function ()
 						          'Heading: '           + position.coords.heading           + '\n' +
 						          'Speed: '             + position.coords.speed             + '\n' +
 						          'Timestamp: '         + new Date(position.timestamp)      + '\n');
+
+											// Native beep, ftw.
+											navigator.notification.beep(1);
+											navigator.notification.vibrate(250);
+						
 						};
 
 						// onError Callback receives a PositionError object

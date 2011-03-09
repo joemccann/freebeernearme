@@ -538,8 +538,9 @@ div.spinner {
 	}
 	
 	#container{
+		margin:0;
 		width:auto;
-		padding:5px 2px;
+		padding:5px 10px 0 0px;
 	}
 
 	#beer-frame
