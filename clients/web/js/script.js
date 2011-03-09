@@ -8,14 +8,13 @@ var	isGapped = false,
 		hasjQueryUi = false, 
 		locale = {};
 
+// For debugging on a plane that has no wifi.
 var offline = false;
 
-	
-	/*
-	* @desc Programmatically center the map frame on the screen based on viewable screen size.
-	* @param Object (optional)
-	*/
-	function positionMapFrame()
+/*
+ * @desc Programmatically center the map frame on the screen based on viewable screen size.
+*/
+function positionMapFrame()
 	{
 		var maxW = window.innerWidth, 
 				maxH = window.innerHeight, 
@@ -34,9 +33,11 @@ var offline = false;
 
 	}
 
-
 $(function(){
 	
+	/*
+	 * @desc Main geolocation method that finds location based on whether you are on a modern web browser or a Phonegap or Titanium Desktop app.
+	 */
 	function whereYat()
 	{
 		// Get location.
@@ -96,7 +97,43 @@ $(function(){
 		}
 		
 	}
+
+	/*
+	 * @desc Callback function for a successful geolocation lookup on modern web browsers.
+	 * @param Object	The data object containing geolocation information such as latitude and longitude.
+	 */
+	function geoSuccess(p)
+	{
+		locale.latitude = p.coords.latitude.toFixed(4);
+		locale.longitude = p.coords.longitude.toFixed(4);
+		
+		bindFindBeerButton(true);
+		
+		//showLocaleInfo();
+	}
+
+	/*
+	 * @desc Callback function for a failed geolocation lookup on modern web browsers.
+	 * @param Object	The data object containing information pertaining to the type of error from the failed attempt.
+	 */
+	function geoError(error)
+	{
+		
+	    switch(error.code)
+	    {
+	        case error.TIMEOUT:
+	            alert("Timed out attempting to get your location.  Try again.");
+	        break;
+					default:
+						alert('Something just aint right.')
+	    };
+			bindFindBeerButton(false);
+	}
 	
+	/*
+	 * @desc Builds a desktop notification for the Titanium app.
+	 * @param String The type of notification
+	 */
 	function showDesktopNotification(type)
 	{
 		switch(type)
@@ -111,33 +148,10 @@ $(function(){
 			default: break;
 		}
 	}
-
-	// This is the function which is called each time the Geo location position is updated
-	function geoSuccess(p)
-	{
-		locale.latitude = p.coords.latitude.toFixed(4);
-		locale.longitude = p.coords.longitude.toFixed(4);
-		
-		bindFindBeerButton(true);
-		
-		//showLocaleInfo();
-	}
-
-	// This function is called each time navigator.geolocation.watchPosition() generates an error (i.e. cannot get a Geo location reading)
-	function geoError(error)
-	{
-		
-	    switch(error.code)
-	    {
-	        case error.TIMEOUT:
-	            alert("Timed out attempting to get your location.  Try again.");
-	        break;
-					default:
-						alert('Something just aint right.')
-	    };
-			bindFindBeerButton(false);
-	}
-
+	
+	/*
+	 * @desc Simple method useful when debugging geolocation data.  Just appends the lat/lon to the <body>
+	 */
 	function showLocaleInfo()
 	{
 		// Brutally inefficient...
@@ -218,8 +232,12 @@ $(function(){
 		}
 		
 	
-	} // end pollTwitter
+	}
 	
+	/*
+	 * @desc Appends a string of DOM elements to the "list" <div.
+	 * @param String The DOM elements that comprise the list of tweets.
+	 */
 	function appendList(list)
 	{
 		$('#list').append(list).fadeIn(200);
@@ -311,9 +329,9 @@ $(function(){
 		}
 	}
 
-	// Big up @slexaxton
 	function yeahNo()
 	{
+		// Big up @slexaxton for inspiring the name of this function.
 		isTitanium = (typeof window.Titanium === 'object') ? true : false;
 		isMobile = /mobile/i.test(navigator.userAgent);
 		isAndroid = /android/i.test(navigator.userAgent);
@@ -327,21 +345,18 @@ $(function(){
 			.find('button')
 			.text( !state ? "Unavailable :(" : "Find Beer Nao!")
 			.bind('click', function(e){
-			//alert(locale.latitude)
-			if( locale.latitude == undefined || !state ) 
-			{
-				alert("Sorry, we can't find your location.  Maybe try again...")
-				return false;
-			}
+				if( locale.latitude == undefined || !state ) 
+				{
+					alert("Sorry, we can't find your location.  Maybe try again...")
+					return false;
+				}
 
-			$('#find-beer').fadeOut(200, function(){
-				$('#fetch').fadeIn(200, function(){
-					pollTwitter();
+				$('#find-beer').fadeOut(200, function(){
+					$('#fetch').fadeIn(200, function(){
+						pollTwitter();
+					});
 				});
-			});
-
 			return false;
-
 		});
 		
 	}
@@ -372,6 +387,7 @@ $(function(){
 		loadjQueryUi();
 		positionMapFrame();
 		
+		// Style the headers and stuff.  Props to @davtron5000 for making lettering.js. 
 		$('header').lettering('lines');
 		$('.line1, .line2').lettering();
 	}
@@ -379,7 +395,6 @@ $(function(){
 	// Bindings...
 	$('#fill').bind('click', closeModal);
 
-	// TODO: Add esc key
 	$(window).bind('keydown', function(e){
 		// escape key or space bar
 		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
@@ -389,7 +404,6 @@ $(function(){
 
 		var href = this.href;
 		var location = $(this).attr('data-location');
-		//console.log(location + " is the location from the data attribute.");
 
 		if(isMobile || isGapped)
 		{
@@ -413,7 +427,7 @@ $(function(){
 
 window.onresize = function()
 {
-	// jQuery UI Resizable stuff.
+	// jQuery UI Resizable stuff?
 	
 	// map frame ish as well....
 	positionMapFrame();
@@ -445,7 +459,7 @@ window.onload = function ()
 							//  adb logcat -c && clear && adb logcat PhoneGapLog:V *:E
 							// and you'll see all the phonegap console.log() calls.
 							console.log(
-											'\nLatitude: '          + position.coords.latitude          + '\n' +
+											'\nLatitude: '        + position.coords.latitude          + '\n' +
 						          'Longitude: '         + position.coords.longitude         + '\n' +
 						          'Altitude: '          + position.coords.altitude          + '\n' +
 						          'Accuracy: '          + position.coords.accuracy          + '\n' +
