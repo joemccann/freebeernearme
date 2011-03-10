@@ -1,4 +1,6 @@
 /* Author: Joe McCann */
+/* subPrint Interactive */
+/* http://subprint.com */
 
 var	isGapped = false, 
 		isMobile = false, 
@@ -33,6 +35,66 @@ function positionMapFrame()
 
 	}
 
+/*
+ * @desc Some async loading of jQuery UI JS and jQuery UI CSS.
+ */
+function loadjQueryUi()
+{
+	
+	if(window.innerWidth > 640 && !hasjQueryUi)
+	{
+		// Load the jQuery JS file.
+		(function(d,t){
+			var g=d.createElement(t),
+					s=d.getElementsByTagName(t)[0];
+					g.async=1;
+    	g.src= (isLocalhost) ? '/js/libs/jquery-ui-1.8.10.custom.min.js' : 'http://freebeernear.me/js/libs/jquery-ui-1.8.10.custom.min.js';
+    	s.parentNode.insertBefore(g,s)
+			
+			// After the script has loaded, let's make the map frame draggable and resizable.
+			g.onload = function(){
+				$('#map-frame')
+					.resizable({
+			        start: function(e, ui) {},
+			        resize: function(e, ui) {},
+			        stop: function(e, ui) {}
+			    })
+					.draggable();
+			}
+			
+			hasjQueryUi = true;
+		
+		}(document,'script'));
+		
+		// Load the jQuery UI CSS file.  
+		(function(d,t){
+			var g=d.createElement(t),
+					s=d.getElementsByTagName(t)[0];
+					g.async=1;
+			    g.href= 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css';
+					g.rel = 'stylesheet';
+					g.type = 'text/css';
+			    s.parentNode.insertBefore(g,s)
+		}(document,'link'));
+	}
+}
+
+/*
+ * @desc Move the copy out of the way after search results have been populated.  Move it back when there's a bigger screen.
+ */
+function toggleCopyContainer()
+{
+	if( (window.innerWidth > 640) && $('#list').is(':visible') && !$('#container-intro-copy').is(':visible') )
+	{
+		$('#container-intro-copy').slideDown();
+	}
+	else if( (window.innerWidth < 640) && $('#list').is(':visible') && $('#container-intro-copy').is(':visible'))  
+	{
+		$('#container-intro-copy').slideUp();
+	}
+}
+
+// Dom Ready for noobs.
 $(function(){
 	
 	/*
@@ -131,25 +193,6 @@ $(function(){
 	}
 	
 	/*
-	 * @desc Builds a desktop notification for the Titanium app.
-	 * @param String The type of notification
-	 */
-	function showDesktopNotification(type)
-	{
-		switch(type)
-		{
-			case 'location-found':
-				var notify = Titanium.Notification.createNotification();
-				notify.setTitle("Free Beer Near Me")
-				notify.setMessage("Your location was found!")
-				notify.setIcon("/img/beer.png")
-				notify.show();
-			break;
-			default: break;
-		}
-	}
-	
-	/*
 	 * @desc Simple method useful when debugging geolocation data.  Just appends the lat/lon to the <body>
 	 */
 	function showLocaleInfo()
@@ -160,16 +203,14 @@ $(function(){
 			.append('<p>Longitude: ' + locale.longitude +'</p>');
 	}
 
-	// Let's call out to our twitter proxy and get some data.
-	/**
-	[{"from_user_id_str":"150625225","location":"37.786000, -122.402400","profile_image_url":"http://a2.twimg.com/profile_images/1118875174/Neptunius_150_normal.png","created_at":"Fri, 04 Mar 2011 02:49:11 +0000","from_user":"neptunius0","id_str":"43503223654465536","metadata":{"result_type":"recent"},"to_user_id":null,"text":"SF Python meetup, lecture on just-in-time compilers with free beer and pizza! :-D @ Yelp HQ http://gowal.la/c/3ESaR","id":43503223654465540,"from_user_id":150625225,"geo":{"type":"Point","coordinates":[37.786,-122.4024]},"iso_language_code":"en","place":{"id":"40cc4f30f5c20c6a","type":"poi","full_name":"Yelp, San Francisco"},"to_user_id_str":null,"source":"<a href="http://gowalla.com/" rel="nofollow">Gowalla</a>"}],"max_id":44049525769371650,"since_id":41527910200381440,"refresh_url":"?since_id=44049525769371648&q=free+beer","total":1,"results_per_page":15,"page":1,"completed_in":1.032223,"warning":"adjusted since_id to 41527910200381440 (), requested since_id was older than allowed","since_id_str":"41527910200381440","max_id_str":"44049525769371648","query":"free+beer"}
-	**/
+	/*
+	 * @desc Make a call out to our twitter geolocation proxy
+	 * @param Function	An optional callback.
+	 */
 	function pollTwitter(cb)
 	{
 		// Some weak hacks to make the url play nice with Express GET routes.
 		var url = isLocalhost ? '/api/gettweets/' : 'http://freebeernear.me/api/gettweets/';
-		
-		console.log("postUrl: "+  url)
 		
 		if(offline)
 		{
@@ -184,90 +225,81 @@ $(function(){
 						if(!data.results.length)
 						{
 							alert("No results for your location!")
+							cb && cb(); 
 						}
 						else
 						{
 							var list = createList(data);
-
 							appendList(list);	
-
+							cb && cb(); 
 						}
-
 					});
 				}
-				
 			})
 		}
 		else
 		{
 			$.get( url + 
-					locale.latitude.replace('.', '_').replace('-', '*') +
-					'/'+
-					locale.longitude.replace('.', '_').replace('-', '*'), 
-
-				function(data){
-
-					if( $('#fetch').is(':visible') )
-					{
-						$('#fetch').fadeOut(200, function(){
-
-							//console.log(data)
-
-							if(!data.results.length)
+						locale.latitude.replace('.', '_').replace('-', '*') +
+						'/'+
+						locale.longitude.replace('.', '_').replace('-', '*'), 
+						function(data)
+						{
+							// Typical response:  
+							// [{"from_user_id_str":"150625225","location":"37.786000, -122.402400","profile_image_url":"http://a2.twimg.com/profile_images/1118875174/Neptunius_150_normal.png","created_at":"Fri, 04 Mar 2011 02:49:11 +0000","from_user":"neptunius0","id_str":"43503223654465536","metadata":{"result_type":"recent"},"to_user_id":null,"text":"SF Python meetup, lecture on just-in-time compilers with free beer and pizza! :-D @ Yelp HQ http://gowal.la/c/3ESaR","id":43503223654465540,"from_user_id":150625225,"geo":{"type":"Point","coordinates":[37.786,-122.4024]},"iso_language_code":"en","place":{"id":"40cc4f30f5c20c6a","type":"poi","full_name":"Yelp, San Francisco"},"to_user_id_str":null,"source":"<a href="http://gowalla.com/" rel="nofollow">Gowalla</a>"}],"max_id":44049525769371650,"since_id":41527910200381440,"refresh_url":"?since_id=44049525769371648&q=free+beer","total":1,"results_per_page":15,"page":1,"completed_in":1.032223,"warning":"adjusted since_id to 41527910200381440 (), requested since_id was older than allowed","since_id_str":"41527910200381440","max_id_str":"44049525769371648","query":"free+beer"}]
+							// We could probably curate this a bit on the server, but good for now.
+							
+							if( $('#fetch').is(':visible') )
 							{
-								alert("No results for your location!")
+								$('#fetch').fadeOut(200, function(){
+
+									//console.log(data)
+
+									if(!data.results.length)
+									{
+										alert("No results for your location!");
+										cb && cb();
+									}
+									else
+									{
+										var list = createList(data);
+										appendList(list);	
+										cb && cb();
+									}
+								});
 							}
-							else
-							{
-								var list = createList(data);
-
-								appendList(list);	
-
-							}
-
 						});
-					}
-			});
-			
 		}
-		
-	
 	}
-	
+
 	/*
-	 * @desc Appends a string of DOM elements to the "list" <div.
-	 * @param String The DOM elements that comprise the list of tweets.
+	 * @desc Creates and returns a string of DOM elements of tweets to be appended to the page.
+	 * @param Object	A JSON object that is returned from the pollTwitter method.
+	 * @return String	The String of DOM elements that comprise the list of tweets.
 	 */
-	function appendList(list)
-	{
-		$('#list').append(list).fadeIn(200);
-	}
-	
 	function createList(data)
 	{
-		var list = "<h2>Search Results:</h2><div id='list-wrap'><ul class='beer-locations'>";
-		var geoIterator = 0
+		var list = "<h2>Search Results:</h2><div id='list-wrap'><ul class='beer-locations'>",
+				geoIterator = 0;
+		
+		// Iterate over the result set and build out the large DOM string.
 		data.results.forEach(function(el, index){
 			if(el.geo != null)
 			{
-				// Show at most 5 results?  Remove this line if you want all and an ugly overflowing container w/scrollbars.
+				// Show at most 5 results?  Remove this line if you want all results and an ugly overflowing container w/scrollbars.
 				if(geoIterator < 5)
 				{
 					geoIterator++;
-					//<a href="http://maps.google.com/maps?daddr=San+Francisco,+CA&saddr=cupertino">Directions</a>
 
-					var startAddress 				= locale.latitude+","+locale.longitude;
-					var destinationAddress 	=	el.location.replace(' ', ''); 
-					
-					var link = '<a href="http://maps.google.com/maps?dirflg=w&daddr='
+					var startAddress	= locale.latitude+","+locale.longitude,
+							destinationAddress 	=	el.location.replace(' ', ''),
+							link 	= '<a href="http://maps.google.com/maps?dirflg=w&daddr='
 											+destinationAddress
 											+'&saddr='+ startAddress 
 											+'">' 
 											+el.text
 											+ '</a>';
 											
-					//link = (isGapped || isAndroid) ? "<a href='geo:"+el.location.replace(' ', '')+"?z=20'>" +el.text+ "</a>" : "<a href='geo:"+el.location+"'>" +el.text+ "</a>";
-
 					list += "<li class='tweet-location' data-location='"+el.location+"'>"+ link +"</li>";
 				} 
 
@@ -277,6 +309,20 @@ $(function(){
 		return list;
 	}
 	
+	/*
+	 * @desc Appends a string of DOM elements to the "list" <div>.
+	 * @param String The DOM elements that comprise the list of tweets.
+	 */
+	function appendList(list)
+	{
+		$('#list').append(list).fadeIn(200, function(){
+			if(window.innerWidth < 640) $('#container-intro-copy').slideUp();
+		});
+	}
+
+	/*
+	 * @desc Helper method to close the Google Maps iframe modal.  
+	 */
 	function closeModal()
 	{
 		if( $('#fill').is(":visible") )
@@ -288,47 +334,9 @@ $(function(){
 		}
 	}
 
-	function loadjQueryUi()
-	{
-		
-		if(window.innerWidth > 540 && !hasjQueryUi)
-		{
-			(function(d,t){
-				var g=d.createElement(t),
-						s=d.getElementsByTagName(t)[0];
-						g.async=1;
-	    	g.src= (isLocalhost) ? '/js/libs/jquery-ui-1.8.10.custom.min.js' : 'http://freebeernear.me/js/libs/jquery-ui-1.8.10.custom.min.js';
-	    	s.parentNode.insertBefore(g,s)
-				g.onload = function(){
-					$('#map-frame').resizable({
-				        start: function(e, ui) {
-				        },
-				        resize: function(e, ui) {
-
-				        },
-				        stop: function(e, ui) {
-				        }
-				    })
-						.draggable();
-				}
-				hasjQueryUi = true;
-			
-			}(document,'script'));
-			
-						(function(d,t){
-							var g=d.createElement(t),
-									s=d.getElementsByTagName(t)[0];
-									g.async=1;
-				    	g.href= 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css';
-							g.rel = 'stylesheet';
-							g.type = 'text/css';
-				    	s.parentNode.insertBefore(g,s)
-						}(document,'link'));
-
-			
-		}
-	}
-
+	/*
+	 * @desc Some feature detection AND user agent sniffing much to the chagrin of @fearphage.
+	 */
 	function yeahNo()
 	{
 		// Big up @slexaxton for inspiring the name of this function.
@@ -338,6 +346,10 @@ $(function(){
 		isLocalhost = /(loc|192)/.test(location.hostname);
 	}
 
+	/*
+	 * @desc Sets the button text and binds the proper event based on the state.
+	 * @param Boolean Whether or not we have location data available.
+	 */
 	function bindFindBeerButton(state)
 	{
 
@@ -360,26 +372,30 @@ $(function(){
 		});
 		
 	}
-	
-	// Do we need this?  Maybe, fuck it...you finish it...
-	function sizeMapFrame()
+
+	/*
+	 * @desc Builds a desktop notification for the Titanium app.
+	 * @param String The type of notification
+	 */
+	function showDesktopNotification(type)
 	{
-	
-		var maxW = window.innerWidth, 
-				maxH = window.innerHeight, 
-				frameW = $('#map-frame').width(), 
-				frameH = $('#map-frame').height(),
-				position = {};
-	
-		// aspect ratio is 4:3, so we'lll need to keep that perspective on downsizing.
-		if(maxW < 800) 
+		// Using a switch here so you can add different types of notifications.
+		switch(type)
 		{
-			// say it is 720
-			// 
+			case 'location-found':
+				var notify = Titanium.Notification.createNotification();
+				notify.setTitle("Free Beer Near Me")
+				notify.setMessage("Your location was found!")
+				notify.setIcon("/img/beer.png")
+				notify.show();
+			break;
+			default: break;
 		}
-		
 	}
 
+	/*
+	 * @desc Kick everything off/initialize some stuff.
+	 */
 	function init()
 	{
 		yeahNo();
@@ -387,7 +403,7 @@ $(function(){
 		loadjQueryUi();
 		positionMapFrame();
 		
-		// Style the headers and stuff.  Props to @davtron5000 for making lettering.js. 
+		// Style the headers and include the break tag.  Props to @davtron5000 for making lettering.js. 
 		$('header').lettering('lines');
 		$('.line1, .line2').lettering();
 	}
@@ -421,16 +437,21 @@ $(function(){
 
 	});
 	
+	/* Go */
 	init();
 	
 })
 
 window.onresize = function()
 {
-	// jQuery UI Resizable stuff?
-	
+	// Think, if the screen starts out smaller than 800px, then grows to more than that, then we need to load jQueryUi.
+	loadjQueryUi();
+
 	// map frame ish as well....
 	positionMapFrame();
+
+	toggleCopyContainer();
+	
 }
 
 window.onload = function ()
@@ -443,7 +464,8 @@ window.onload = function ()
 
 	// Some nice branding, eh?
 	setTimeout(function(){ $('#subprint').fadeIn(3000)}, 1000);		
-	
+
+	// For phonegap...
 	document.addEventListener('deviceready', function ()
     {
         if ( !!(device.platform) )
@@ -455,10 +477,12 @@ window.onload = function ()
 							// Make them strings...
 							locale.latitude = position.coords.latitude + "";  
 							locale.longitude = position.coords.longitude + "";
-						  // #protip, in a shell do the following:  
-							//  adb logcat -c && clear && adb logcat PhoneGapLog:V *:E
-							// and you'll see all the phonegap console.log() calls.
-							console.log(
+						  
+							// #protip, in a shell do the following:  
+							// adb logcat -c && clear && adb logcat PhoneGapLog:V *:E
+							// and you'll see all the phonegap console.log() calls and only errors for everything else Android.
+							
+							/*console.log(
 											'\nLatitude: '        + position.coords.latitude          + '\n' +
 						          'Longitude: '         + position.coords.longitude         + '\n' +
 						          'Altitude: '          + position.coords.altitude          + '\n' +
@@ -471,6 +495,7 @@ window.onload = function ()
 											// Native beep, ftw.
 											navigator.notification.beep(1);
 											navigator.notification.vibrate(250);
+											*/
 						
 						};
 
