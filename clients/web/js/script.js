@@ -7,7 +7,9 @@ var	isGapped = false,
 		isAndroid = false,
 		isTitanium = false,
 		isLocalhost = false,
-		hasjQueryUi = false, 
+		hasjQueryUi = false,
+		hasTouchSupport = false,
+		clickEvent = "", 
 		locale = {};
 
 // For debugging on a plane that has no wifi.
@@ -94,6 +96,35 @@ function toggleCopyContainer()
 }
 
 
+function touchEndHandler(e)
+{
+var length = e.changedTouches.length;
+for (var i = 0; i < length; i++)
+{
+	var touch = e.changedTouches[i];
+	var $target = $(touch.target);
+	if ($target.length == 1)
+	{
+		var offset = $target.offset();
+		if (touch.pageX >= offset.left && touch.pageX <= offset.left + $target.outerWidth() && touch.pageY >= offset.top && touch.pageY <= offset.top + $target.outerHeight())
+		{
+			if (this.preventTouchEventDefault)
+			{
+				e.preventDefault();
+			}
+			if (this.stopTouchEventPropagation)
+			{
+				e.stopPropagation();
+			}
+			touch.type = 'tap';
+			$target.trigger(new jQuery.Event(touch));
+		}
+	}
+}
+return false;
+}
+
+
 // Dom Ready...
 $(function(){
 	
@@ -112,7 +143,10 @@ $(function(){
 			}
 			else
 			{
-						navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 30000, enableHighAccuracy: true });
+//						navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 30000, enableHighAccuracy: true });
+
+						navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+
 
 				//		navigator.geolocation.watchPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
 			}
@@ -127,6 +161,7 @@ $(function(){
 
 			// Let's try by IP
 			// Build the URL to query
+			// No x-domain issues bc we're on a native client.
 			var url = "http://freegeoip.net/json/";
 
 			$.getJSON(url, function(data){
@@ -163,8 +198,8 @@ $(function(){
 	 */
 	function geoSuccess(p)
 	{
-		locale.latitude = p.coords.latitude.toFixed(4);
-		locale.longitude = p.coords.longitude.toFixed(4);
+		locale.latitude = p.coords.latitude + "";
+		locale.longitude = p.coords.longitude + "";
 		
 		bindFindBeerButton(true);
 		
@@ -177,7 +212,6 @@ $(function(){
 	 */
 	function geoError(error)
 	{
-		
 	    switch(error.code)
 	    {
 	        case error.TIMEOUT:
@@ -341,6 +375,7 @@ $(function(){
 		isMobile = /mobile/i.test(navigator.userAgent);
 		isAndroid = /android/i.test(navigator.userAgent);
 		isLocalhost = /(loc|192)/.test(location.hostname);
+		hasTouchSupport = isMobile || isAndroid;
 	}
 
 	/*
@@ -391,6 +426,46 @@ $(function(){
 	}
 
 	/*
+	 * @desc Wrapper to fire all bindings in one function call.
+	 */
+  function bindEvents()
+  {
+    // Bindings...
+  	$('#fill').bind(clickEvent, closeModal);
+
+  	$(window).bind('keydown', function(e){
+  		// escape key or space bar
+  		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
+  	});
+
+  	$('.tweet-location > a').live(clickEvent, function(){
+
+  		var href = this.href;
+  		var location = $(this).attr('data-location');
+
+  		if(isMobile || isGapped)
+  		{
+  			// Let device open Google Maps.
+  			// No op here so you can have the above comment.
+  		}
+  		else
+  		{
+  			// Show modal (weak sauce, modals are lame, but I'm strapped for time)
+  			$('#fill').fadeIn(200, function(){
+  				$('#map-frame').append("<iframe id='current-iframe' width='98%' height='98%' frameborder='0' scrolling='no' src='" + href + "'></iframe>").fadeIn(200)
+  			});
+
+  		}
+  		return isMobile;
+
+  	});
+
+    // For mobile...
+    hasTouchSupport && document.addEventListener('touchend', touchEndHandler, false);
+  	
+  }
+  
+	/*
 	 * @desc Kick everything off/initialize some stuff.
 	 */
 	function init()
@@ -399,41 +474,19 @@ $(function(){
 		whereYat();
 		loadjQueryUi();
 		positionMapFrame();
+	
+    clickEvent = hasTouchSupport ? 'tap' : 'click';
+
+    bindEvents();
 		
 		// Style the headers and include the break tag.  Props to @davtron5000 for making lettering.js. 
 		$('header').lettering('lines');
 		$('.line1, .line2').lettering();
+		
+		// Let's help out the garbage collector on mobile devices.
+		delete init;
+		
 	}
-	
-	// Bindings...
-	$('#fill').bind('click', closeModal);
-
-	$(window).bind('keydown', function(e){
-		// escape key or space bar
-		if(e.keyCode == 27 || e.keyCode == 32 ) closeModal();
-	});
-	
-	$('.tweet-location > a').live('click', function(){
-
-		var href = this.href;
-		var location = $(this).attr('data-location');
-
-		if(isMobile || isGapped)
-		{
-			// Let device open Google Maps.
-			// No op here so you can have the above comment.
-		}
-		else
-		{
-			// Show modal (weak sauce, modals are lame, but I'm strapped for time)
-			$('#fill').fadeIn(200, function(){
-				$('#map-frame').append("<iframe id='current-iframe' width='98%' height='98%' frameborder='0' scrolling='no' src='" + href + "'></iframe>").fadeIn(200)
-			});
-
-		}
-		return isMobile;
-
-	});
 	
 	/* Go */
 	init();
