@@ -47,8 +47,8 @@ function loadjQueryUi()
 			var g=d.createElement(t),
 					s=d.getElementsByTagName(t)[0];
 					g.async=1;
-    	g.src= (isLocalhost) ? '/js/libs/jquery-ui-1.8.10.custom.min.js' : 'http://freebeernear.me/js/libs/jquery-ui-1.8.10.custom.min.js';
-    	s.parentNode.insertBefore(g,s)
+    	    g.src= (isLocalhost) ? '/js/libs/jquery-ui-1.8.10.custom.min.js' : 'http://freebeernear.me/js/libs/jquery-ui-1.8.10.custom.min.js';
+    	    s.parentNode.insertBefore(g,s)
 			
 			// After the script has loaded, let's make the map frame draggable and resizable.
 			g.onload = function(){
@@ -93,7 +93,8 @@ function toggleCopyContainer()
 	}
 }
 
-// Dom Ready for noobs.
+
+// Dom Ready...
 $(function(){
 	
 	/*
@@ -130,7 +131,6 @@ $(function(){
 
 			$.getJSON(url, function(data){
 				/**
-				// For example...
 				{
 				  "country_name": "United States",
 				  "city": "Austin",
@@ -149,8 +149,6 @@ $(function(){
 				isTitanium && locale.latitude && showDesktopNotification("location-found");
 				
 				bindFindBeerButton(true);
-				
-
 				//showLocaleInfo();
 
 			});
