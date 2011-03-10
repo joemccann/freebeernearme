@@ -96,35 +96,6 @@ function toggleCopyContainer()
 }
 
 
-function touchEndHandler(e)
-{
-var length = e.changedTouches.length;
-for (var i = 0; i < length; i++)
-{
-	var touch = e.changedTouches[i];
-	var $target = $(touch.target);
-	if ($target.length == 1)
-	{
-		var offset = $target.offset();
-		if (touch.pageX >= offset.left && touch.pageX <= offset.left + $target.outerWidth() && touch.pageY >= offset.top && touch.pageY <= offset.top + $target.outerHeight())
-		{
-			if (this.preventTouchEventDefault)
-			{
-				e.preventDefault();
-			}
-			if (this.stopTouchEventPropagation)
-			{
-				e.stopPropagation();
-			}
-			touch.type = 'tap';
-			$target.trigger(new jQuery.Event(touch));
-		}
-	}
-}
-return false;
-}
-
-
 // Dom Ready...
 $(function(){
 	
@@ -424,6 +395,37 @@ $(function(){
 			default: break;
 		}
 	}
+
+  /*
+   * @desc Handy method courtesy of @bitprobe for creating "tap" events for mobile devices.
+   */
+  function touchEndHandler(e)
+  {
+    var length = e.changedTouches.length;
+    for (var i = 0; i < length; i++)
+    {
+    	var touch = e.changedTouches[i];
+    	var $target = $(touch.target);
+    	if ($target.length == 1)
+    	{
+    		var offset = $target.offset();
+    		if (touch.pageX >= offset.left && touch.pageX <= offset.left + $target.outerWidth() && touch.pageY >= offset.top && touch.pageY <= offset.top + $target.outerHeight())
+    		{
+    			if (this.preventTouchEventDefault)
+    			{
+    				e.preventDefault();
+    			}
+    			if (this.stopTouchEventPropagation)
+    			{
+    				e.stopPropagation();
+    			}
+    			touch.type = 'tap';
+    			$target.trigger(new jQuery.Event(touch));
+    		}
+    	}
+    }
+    return false;
+  }
 
 	/*
 	 * @desc Wrapper to fire all bindings in one function call.
