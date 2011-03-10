@@ -87,8 +87,8 @@ button, input, select, textarea { margin: 0; }
 /* These selection declarations have to be separate.
    No text-shadow: twitter.com/miketaylr/status/12228805301
    Also: hot pink. */
-::-moz-selection{ background: #FF5E99; color:#fff; text-shadow: none; }
-::selection { background:#FF5E99; color:#fff; text-shadow: none; }
+::-moz-selection{ background: #FAAA99; color:#fff; text-shadow: none; }
+::selection { background:#FAAA99; color:#fff; text-shadow: none; }
 
 /* j.mp/webkit-tap-highlight-color */
 a:link { -webkit-tap-highlight-color: #FF5E99; }
@@ -356,7 +356,6 @@ div.spinner {
 
 @media all and (max-width: 533px){
 	
-	
 	h2{
 		text-align:center;
 	}
@@ -452,7 +451,7 @@ div.spinner {
 	{
 		position:static;
 		display:none;
-		margin:0 auto;
+		margin:100px auto 0;
 		width:100px;
 		height:28px;
 	}
@@ -562,7 +561,7 @@ div.spinner {
 	{
 		position:static;
 		display:none;
-		margin:0 auto;
+		margin:100px auto 0;
 		width:100px;
 		height:28px;
 	}

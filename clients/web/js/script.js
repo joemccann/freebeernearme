@@ -15,25 +15,24 @@ var offline = false;
 
 /*
  * @desc Programmatically center the map frame on the screen based on viewable screen size.
-*/
+ */
 function positionMapFrame()
+{
+	var maxW = window.innerWidth, 
+			maxH = window.innerHeight, 
+			frameW = $('#map-frame').width(), 
+			frameH = $('#map-frame').height(),
+			position = {};
+   
+	if(maxW < frameW) position = {left:0};
+	else
 	{
-		var maxW = window.innerWidth, 
-				maxH = window.innerHeight, 
-				frameW = $('#map-frame').width(), 
-				frameH = $('#map-frame').height(),
-				position = {};
-    
-		if(maxW < frameW) position = {left:0};
-		else
-		{
-			// if maxW = 1200 and frameW = 800
-			// (maxW-frameW)/2 = 200, left = 200;
-			position = { left:(maxW-frameW)/2 + "px", top:"20px"}
-		}
-		$('#map-frame').css(position);
-
+		// if maxW = 1200 and frameW = 800
+		// (maxW-frameW)/2 = 200, left = 200;
+		position = { left:(maxW-frameW)/2 + "px", top:"20px"}
 	}
+	$('#map-frame').css(position);
+}
 
 /*
  * @desc Some async loading of jQuery UI JS and jQuery UI CSS.
@@ -424,6 +423,7 @@ $(function(){
 		if(isMobile || isGapped)
 		{
 			// Let device open Google Maps.
+			// No op here so you can have the above comment.
 		}
 		else
 		{
@@ -447,9 +447,8 @@ window.onresize = function()
 	// Think, if the screen starts out smaller than 800px, then grows to more than that, then we need to load jQueryUi.
 	loadjQueryUi();
 
-	// map frame ish as well....
 	positionMapFrame();
-
+	
 	toggleCopyContainer();
 	
 }
