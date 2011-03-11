@@ -196,11 +196,11 @@ ul li:first-child
 }
 
 #list{
-	margin-top:15px;
+	margin-top:0;
 }
 
 #list-wrap{
-	max-height:290px;
+	max-height:300px;
 	overflow:auto;
 }
 
