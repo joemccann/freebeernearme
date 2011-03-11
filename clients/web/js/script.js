@@ -189,7 +189,7 @@ $(function(){
 	            alert("Timed out attempting to get your location.  Try again.");
 	        break;
 					default:
-						alert('Something just aint right.')
+						alert('Ruh-roh. Are you location settings enabled. Check your settings and try again.')
 	    };
 			bindFindBeerButton(false);
 	}
