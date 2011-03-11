@@ -200,7 +200,7 @@ ul li:first-child
 }
 
 #list-wrap{
-	max-height:260px;
+	max-height:290px;
 	overflow:auto;
 }
 
