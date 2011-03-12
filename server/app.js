@@ -21,7 +21,7 @@ app.configure('production', function(){
 
 var manifest = {
 	uri:{
-		twitter: "http://search.twitter.com/search.json?q={query}&rpp=1000&geocode={lat},{long},10mi"
+		twitter: "http://search.twitter.com/search.json?q={query}&rpp=80&geocode={lat},{long},10mi"
 	}
 }
 
