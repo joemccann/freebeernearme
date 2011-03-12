@@ -114,12 +114,8 @@ $(function(){
 			}
 			else
 			{
-//						navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 30000, enableHighAccuracy: true });
-
-						navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
-
-
-				//		navigator.geolocation.watchPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
+					navigator.geolocation.getCurrentPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 30000, enableHighAccuracy: true });
+					//navigator.geolocation.watchPosition(geoSuccess, geoError, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
 			}
 		}
 		else{
@@ -543,11 +539,11 @@ window.onload = function ()
 						          'Heading: '           + position.coords.heading           + '\n' +
 						          'Speed: '             + position.coords.speed             + '\n' +
 						          'Timestamp: '         + new Date(position.timestamp)      + '\n');
-
-											// Native beep, ftw.
-											navigator.notification.beep(1);
-											navigator.notification.vibrate(250);
 											*/
+
+							// Native beep, ftw.
+							navigator.notification.beep(1); // comment or remove this line to lose the beep and rebuild the app.
+							navigator.notification.vibrate(250);
 						
 						};
 
@@ -558,7 +554,6 @@ window.onload = function ()
 						          'message: ' + error.message + '\n');
 						}
 						
-					
 						navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
 				}
     }, false);
