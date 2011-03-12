@@ -40,15 +40,14 @@ function createGeoTweetUri(q,lat,lon)
  */
 app.get('/api/gettweets/:lat/:lon', function(req,res,next){
 	
-	//console.log(req.params)
-	
 	var lat = req.params['lat'];
 	var lon = req.params['lon'];
-	
+
 	lat = lat.replace("_", ".").replace("*", "-")
 	lon = lon.replace("_", ".").replace("*", "-")
-	
-	//console.log(createGeoTweetUri("free beer", lat, lon))
+
+	console.log('\nRemote Address: ' + sys.inspect(req.socket.remoteAddress))
+  console.log('\nRequest GPS coordinates: '+lat+','+lon)
 	
 	request(
   {
