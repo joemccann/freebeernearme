@@ -285,12 +285,24 @@ $(function(){
 			if(el.geo != null)
 			{
 				// Show at most 5 results?  Remove this line if you want all results and an ugly overflowing container w/scrollbars.
-				if(geoIterator < 5)
+				if(geoIterator < 5 && el.geo.coordinates.length)
 				{
 					geoIterator++;
+					
+					// Destination address is now pulled from geo object as twitter removed "location" property from JSON payload.
+
+          /*
+          geo: {
+            type: "Point",
+            coordinates: [
+            30.2607
+            -97.7378
+            ]
+          }
+          */
 
 					var startAddress	= locale.latitude+","+locale.longitude,
-							destinationAddress 	=	el.location.replace(' ', ''),
+							destinationAddress 	=	el.geo.coordinates[0] + "," + el.geo.coordinates[1], 
 							link 	= '<a href="http://maps.google.com/maps?dirflg=w&daddr='
 											+destinationAddress
 											+'&saddr='+ startAddress 
