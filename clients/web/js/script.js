@@ -316,6 +316,8 @@ $(function(){
 			}
 		})
 		list += "</ul></div>";
+		// For @rem
+		if(geoIterator == 0) list = "<h2>Oh Noes!</h2><p>No free beer nearby, except maybe for Remy.</p>";
 		return list;
 	}
 	
