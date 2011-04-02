@@ -1,14 +1,14 @@
 var express = require('express'),
-		sys = require('sys'),
+		util = require('util'),
 		request = require('request')
 
 var app = module.exports = express.createServer();
 
 // App Configuration
 app.configure(function(){
-    app.use('/', express.bodyDecoder());
+    app.use('/', express.bodyParser());
     app.use('/', express.methodOverride());
-    app.use(express.staticProvider(__dirname + '/codebase'));
+    app.use(express.static(__dirname + '/codebase'));
 });
 
 app.configure('development', function(){
@@ -57,14 +57,14 @@ app.get('/api/gettweets/:lat/:lon', function(req,res,next){
       {
           var result = JSON.parse(body)
 
-					//console.log(sys.inspect(result));
+					//console.log(util.inspect(result));
 					
 					res.send( JSON.stringify(result), { 'Content-Type': 'application/json' }, response.statusCode);
 
       }
       else
       {
-          console.log(sys.inspect(response));
+          console.log(util.inspect(response));
 					res.send( JSON.stringify(response), { 'Content-Type': 'application/json' }, response.statusCode);
       }
   });
