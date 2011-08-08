@@ -1,6 +1,8 @@
-var express = require('express'),
-		util = require('util'),
-		request = require('request')
+var express = require('express')
+  , util = require('util')
+  , request = require('request')
+  , debug = false
+		
 
 var app = module.exports = express.createServer();
 
@@ -74,6 +76,6 @@ app.get('/api/gettweets/:lat/:lon', function(req,res,next){
 // Only listen on $ node app.js
 
 if (!module.parent) {
-  app.listen(7575);
+  app.listen(debug ? 7575 : 80);
   console.log("Express server listening on port %d", app.address().port)
 }
