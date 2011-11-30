@@ -18,5 +18,12 @@ Requirements
 
 On the server you'll need:
 
-* Node.js version 0.4.3
-* Express version 2.2.0
+* Node.js version 0.6.1
+
+To get the webapp running:
+
+* Clone the repo
+* `cd freebeernearme`
+* `npm install -d`
+* `node server/app.js`
+* `open 127.0.0.1:7575`
