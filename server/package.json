@@ -1,0 +1,12 @@
+{
+    "name": "FreeBeerNearMe"
+  , "description": "Let’s face it. Sometimes you need a beer. Why not find beer that's not only nearby, but also free?!"
+  , "version": "0.0.1"
+  , "keywords": "express, request, beer, free"
+  , "private": true
+  , "dependencies": 
+  {
+    "express": ">=2.5.0"
+  , "request": "2.2.0"
+  }
+}
