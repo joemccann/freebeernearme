@@ -237,10 +237,14 @@ $(function(){
 		}
 		else
 		{
-			$.get( url + 
-						locale.latitude.replace('.', '_').replace('-', '*') +
-						'/'+
-						locale.longitude.replace('.', '_').replace('-', '*'), 
+		  
+		  var postUrl = url 
+		                + locale.latitude.replace('.', '_').replace('-', '*') 
+		                + '/'
+		                + locale.longitude.replace('.', '_').replace('-', '*')
+		                
+		                
+			$.get( postUrl, 
 						function(data)
 						{
 							// Typical response:  
