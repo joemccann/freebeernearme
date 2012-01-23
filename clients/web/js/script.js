@@ -456,7 +456,7 @@ $(function(){
 
   	$('.tweet-location > a').live(clickEvent, function(){
 
-  		var href = this.href;
+  		var href = this.href + "&output=embed"
   		var location = $(this).attr('data-location');
 
   		if(isMobile || isGapped)
