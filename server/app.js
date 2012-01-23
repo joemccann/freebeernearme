@@ -74,7 +74,6 @@ app.get('/api/gettweets/:lat/:lon', function(req,res,next){
 })
 
 
-// Only listen on $ node app.js
 
 if (cluster.isMaster){
 
