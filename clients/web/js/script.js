@@ -205,74 +205,92 @@ $(function(){
 	 * @desc Make a call out to our twitter geolocation proxy
 	 * @param Function	An optional callback.
 	 */
-	function pollTwitter(cb)
-	{
-		// Some weak hacks to make the url play nice with Express GET routes.
-		var url = isLocalhost ? '/api/gettweets/' : 'http://freebeernear.me/api/gettweets/';
-		
-		if(offline)
-		{
-			$.get('/testing.json', function(data){
-				
-				if( $('#fetch').is(':visible') )
-				{
-					$('#fetch').fadeOut(200, function(){
+	function pollTwitter(cb){
+    var url = isLocalhost ? '/api/gettweets/' : 'http://freebeernear.me/api/gettweets';
 
-						//console.log(data)
+    if(offline)
+    {
+      $.get('/testing.json', function(data){
 
-						if(!data.results.length)
-						{
-							alert("No results for your location!")
-							cb && cb(); 
-						}
-						else
-						{
-							var list = createList(data);
-							appendList(list);	
-							cb && cb(); 
-						}
-					});
-				}
-			})
-		}
-		else
-		{
-		  
-		  var postUrl = url 
-		                + locale.latitude.replace('.', '_').replace('-', '*') 
-		                + '/'
-		                + locale.longitude.replace('.', '_').replace('-', '*')
-		                
-		                
-			$.get( postUrl, 
-						function(data)
-						{
-							// Typical response:  
-							// [{"from_user_id_str":"150625225","location":"37.786000, -122.402400","profile_image_url":"http://a2.twimg.com/profile_images/1118875174/Neptunius_150_normal.png","created_at":"Fri, 04 Mar 2011 02:49:11 +0000","from_user":"neptunius0","id_str":"43503223654465536","metadata":{"result_type":"recent"},"to_user_id":null,"text":"SF Python meetup, lecture on just-in-time compilers with free beer and pizza! :-D @ Yelp HQ http://gowal.la/c/3ESaR","id":43503223654465540,"from_user_id":150625225,"geo":{"type":"Point","coordinates":[37.786,-122.4024]},"iso_language_code":"en","place":{"id":"40cc4f30f5c20c6a","type":"poi","full_name":"Yelp, San Francisco"},"to_user_id_str":null,"source":"<a href="http://gowalla.com/" rel="nofollow">Gowalla</a>"}],"max_id":44049525769371650,"since_id":41527910200381440,"refresh_url":"?since_id=44049525769371648&q=free+beer","total":1,"results_per_page":15,"page":1,"completed_in":1.032223,"warning":"adjusted since_id to 41527910200381440 (), requested since_id was older than allowed","since_id_str":"41527910200381440","max_id_str":"44049525769371648","query":"free+beer"}]
-							// We could probably curate this a bit on the server, but good for now.
-							
-							if( $('#fetch').is(':visible') )
-							{
-								$('#fetch').fadeOut(200, function(){
+        if( $('#fetch').is(':visible') ){
+          $('#fetch').fadeOut(200, function(){
 
-									//console.log(data)
+            //console.log(data)
 
-									if(!data.results.length)
-									{
-										alert("No results for your location!");
-										cb && cb();
-									}
-									else
-									{
-										var list = createList(data);
-										appendList(list);	
-										cb && cb();
-									}
-								});
-							}
-						});
-		}
-	}
+            if(!data.results.length){
+              alert("No results for your location!")
+              cb && cb(); 
+            }
+            else{
+              var list = createList(data);
+              appendList(list);	
+              cb && cb(); 
+            }
+          })
+        } // end if
+      }) // end $.get() callback
+    }
+    else{
+
+      function _beforeSendHandler(jqXHR, data){}
+
+      function _doneHandler(jqXHR, data, response){
+
+        var data = JSON.parse(response.responseText)
+
+        // console.log(data)
+
+       // Typical response:  
+       // [{"from_user_id_str":"150625225","location":"37.786000, -122.402400","profile_image_url":"http://a2.twimg.com/profile_images/1118875174/Neptunius_150_normal.png","created_at":"Fri, 04 Mar 2011 02:49:11 +0000","from_user":"neptunius0","id_str":"43503223654465536","metadata":{"result_type":"recent"},"to_user_id":null,"text":"SF Python meetup, lecture on just-in-time compilers with free beer and pizza! :-D @ Yelp HQ http://gowal.la/c/3ESaR","id":43503223654465540,"from_user_id":150625225,"geo":{"type":"Point","coordinates":[37.786,-122.4024]},"iso_language_code":"en","place":{"id":"40cc4f30f5c20c6a","type":"poi","full_name":"Yelp, San Francisco"},"to_user_id_str":null,"source":"<a href="http://gowalla.com/" rel="nofollow">Gowalla</a>"}],"max_id":44049525769371650,"since_id":41527910200381440,"refresh_url":"?since_id=44049525769371648&q=free+beer","total":1,"results_per_page":15,"page":1,"completed_in":1.032223,"warning":"adjusted since_id to 41527910200381440 (), requested since_id was older than allowed","since_id_str":"41527910200381440","max_id_str":"44049525769371648","query":"free+beer"}]
+       // We could probably curate this a bit on the server, but good for now.
+       
+       if( $('#fetch').is(':visible') ){
+         
+         $('#fetch').fadeOut(200, function(){
+
+           //console.log(data)
+
+           if(!data.results.length)
+           {
+             alert("No results for your location!");
+             cb && cb();
+           }
+           else
+           {
+             var list = createList(data);
+             appendList(list); 
+             cb && cb();
+           }
+         })
+         
+       } // end if
+
+      } // end done handler
+
+      function _failHandler(jqXHR, errorString, err){
+        alert("Roh-roh. Something went wrong. :(")
+      }
+
+      function _alwaysHandler(jqXHR, data){}
+
+      var postData = 'lat=' + locale.latitude  + '&lon=' + locale.longitude
+      
+      // console.log(postData)
+      var config = {
+                      type: 'POST',
+                      dataType: 'json',
+                      data: postData,
+                      url: url,
+                      beforeSend: _beforeSendHandler,
+                      error: _failHandler,
+                      success: _doneHandler,
+                      complete: _alwaysHandler
+                    }
+
+      $.ajax(config)
+
+    }
+  } // end pollTwitter()
 
 	/*
 	 * @desc Creates and returns a string of DOM elements of tweets to be appended to the page.
@@ -367,28 +385,25 @@ $(function(){
 	 * @desc Sets the button text and binds the proper event based on the state.
 	 * @param Boolean Whether or not we have location data available.
 	 */
-	function bindFindBeerButton(state)
-	{
+	function bindFindBeerButton(state){
 
 		$('#find-beer')
-			.find('button')
-			.text( !state ? "Unavailable :(" : "Find Beer Nao!")
-			.bind('click', function(e){
-				if( locale.latitude == undefined || !state ) 
-				{
-					alert("Sorry, we can't find your location.  Maybe try again...")
-					return false;
-				}
+    .find('button')
+    .text( !state ? "Unavailable :(" : "Find Beer Nao!")
+    .bind('click', function(e){
+      if( locale.latitude == undefined || !state ){
+        alert("Sorry, we can't find your location.  Maybe try again...")
+        return false
+      }
 
-				$('#find-beer').fadeOut(200, function(){
-					$('#fetch').fadeIn(200, function(){
-						pollTwitter();
-					});
-				});
-			return false;
-		});
-		
-	}
+      $('#find-beer').fadeOut(200, function(){
+          $('#fetch').fadeIn(200, function(){
+            pollTwitter()
+          })
+        })
+        return false
+    }) // end bind()
+  } // end bindFindBeerButton()
 
 	/*
 	 * @desc Builds a desktop notification for the Titanium app.
@@ -456,30 +471,29 @@ $(function(){
 
   	$('.tweet-location > a').live(clickEvent, function(){
 
-  		var href = this.href + "&output=embed"
-  		var location = $(this).attr('data-location');
+      var href = this.href + "&output=embed"
+      var location = $(this).attr('data-location');
 
-  		if(isMobile || isGapped)
-  		{
-  			// Let device open Google Maps.
-  			// No op here so you can have the above comment.
-  		}
-  		else
-  		{
-  			// Show modal (weak sauce, modals are lame, but I'm strapped for time)
-  			$('#fill').fadeIn(200, function(){
-  				$('#map-frame').append("<iframe id='current-iframe' width='98%' height='98%' frameborder='0' scrolling='no' src='" + href + "'></iframe>").fadeIn(200)
-  			});
-
-  		}
-  		return isMobile;
-
-  	});
+      if(isMobile || isGapped)
+      {
+      	// Let device open Google Maps.
+      	// No op here so you can have the above comment.
+      }
+      else
+      {
+        // Show modal (weak sauce, modals are lame, but I'm strapped for time)
+        $('#fill').fadeIn(200, function(){
+          $('#map-frame').append("<iframe id='current-iframe' width='98%' height='98%' frameborder='0' scrolling='no' src='" + href + "'></iframe>")
+            .fadeIn(200)
+        })
+      }
+      return isMobile
+    }) // end .live() callback
 
     // For mobile...
-    hasTouchSupport && document.addEventListener('touchend', touchEndHandler, false);
-  	
-  }
+    hasTouchSupport && document.addEventListener('touchend', touchEndHandler, false)
+
+  } // end bindEvents()
   
 	/*
 	 * @desc Kick everything off/initialize some stuff.
@@ -538,41 +552,41 @@ window.onload = function ()
         {
             // So we are on the Android device.
             isGapped = true;
-						
-						var onSuccess = function(position) {
-							// Make them strings...
-							locale.latitude = position.coords.latitude + "";  
-							locale.longitude = position.coords.longitude + "";
-						  
-							// #protip, in a shell do the following:  
-							// adb logcat -c && clear && adb logcat PhoneGapLog:V *:E
-							// and you'll see all the phonegap console.log() calls and only errors for everything else Android.
-							
-							/*console.log(
-											'\nLatitude: '        + position.coords.latitude          + '\n' +
-						          'Longitude: '         + position.coords.longitude         + '\n' +
-						          'Altitude: '          + position.coords.altitude          + '\n' +
-						          'Accuracy: '          + position.coords.accuracy          + '\n' +
-						          'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-						          'Heading: '           + position.coords.heading           + '\n' +
-						          'Speed: '             + position.coords.speed             + '\n' +
-						          'Timestamp: '         + new Date(position.timestamp)      + '\n');
-											*/
 
-							// Native beep, ftw.
-							navigator.notification.beep(1); // comment or remove this line to lose the beep and rebuild the app.
-							navigator.notification.vibrate(250);
-						
-						};
+          var onSuccess = function(position){
+            // Make them strings...
+            locale.latitude = position.coords.latitude + "";  
+            locale.longitude = position.coords.longitude + "";
 
-						// onError Callback receives a PositionError object
-						//
-						function onError(error) {
-						    alert('code: '    + error.code    + '\n' +
-						          'message: ' + error.message + '\n');
-						}
-						
-						navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
-				}
-    }, false);
+            // #protip, in a shell do the following:  
+            // adb logcat -c && clear && adb logcat PhoneGapLog:V *:E
+            // and you'll see all the phonegap console.log() calls and only errors for everything else Android.
+
+            /*console.log(
+            				'\nLatitude: '        + position.coords.latitude          + '\n' +
+                    'Longitude: '         + position.coords.longitude         + '\n' +
+                    'Altitude: '          + position.coords.altitude          + '\n' +
+                    'Accuracy: '          + position.coords.accuracy          + '\n' +
+                    'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+                    'Heading: '           + position.coords.heading           + '\n' +
+                    'Speed: '             + position.coords.speed             + '\n' +
+                    'Timestamp: '         + new Date(position.timestamp)      + '\n');
+            				*/
+
+            // Native beep, ftw.
+            navigator.notification.beep(1); // comment or remove this line to lose the beep and rebuild the app.
+            navigator.notification.vibrate(250);
+
+          } // end onSuccess
+
+          // onError Callback receives a PositionError object
+          //
+          function onError(error) {
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+          }
+
+          navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: true });
+          }
+    }, false)
 }

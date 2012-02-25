@@ -38,23 +38,16 @@ function createGeoTweetUri(q,lat,lon)
 
 /**
 * @desc Route to handle/proxy geotweet request to twitter.
-* Note: In the curl, we add underscores and asterisks which are then replaced so you can test the url in the browser.
-* curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET http://freebeernear.me/api/gettweets/37_786000/*122_402400 | jsonpretty
 */
-app.get('/api/gettweets/:lat/:lon', function(req,res,next){
-
-  var lat = req.params['lat'],
-  lon = req.params['lon'],
-
-  lat = lat.replace("_", ".").replace("*", "-")
-  lon = lon.replace("_", ".").replace("*", "-")
-
+app.post('/api/gettweets', function(req,res,next){
+  
+  var lat = req.body.lat
+    , lon = req.body.lon
+  
   console.log('\nRequest GPS coordinates: '+lat+','+lon)
 
-  request.get(
-    {
-    uri: createGeoTweetUri("free beer", lat, lon)
-    }, function (error, response, body){
+  request.get({ uri: createGeoTweetUri("free beer", lat, lon)}, 
+    function (error, response, body){
       if (!error && response.statusCode == 200)
         {
           var result = JSON.parse(body)
