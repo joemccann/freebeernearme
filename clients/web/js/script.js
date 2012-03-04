@@ -1,3 +1,6 @@
+// TODO:  IF 'www' is in the location.host the redirect to just freebeernear.me
+
+
 /* Author: Joe McCann */
 /* subPrint Interactive */
 /* http://subprint.com */
@@ -18,22 +21,21 @@ var offline = false;
 /*
  * @desc Programmatically center the map frame on the screen based on viewable screen size.
  */
-function positionMapFrame()
-{
-	var maxW = window.innerWidth, 
-			maxH = window.innerHeight, 
-			frameW = $('#map-frame').width(), 
-			frameH = $('#map-frame').height(),
-			position = {};
+function positionMapFrame(){
+  
+	var maxW = window.innerWidth
+	  , maxH = window.innerHeight
+	  , frameW = $('#map-frame').width()
+	  , frameH = $('#map-frame').height()
+	  , position = {}
    
-	if(maxW < frameW) position = {left:0};
-	else
-	{
+	if(maxW < frameW) position = {left:0}
+	else{
 		// if maxW = 1200 and frameW = 800
 		// (maxW-frameW)/2 = 200, left = 200;
-		position = { left:(maxW-frameW)/2 + "px", top:"20px"}
+		position = { left: (maxW-frameW)/2 + "px", top:"20px"}
 	}
-	$('#map-frame').css(position);
+	$('#map-frame').css(position)
 }
 
 /*
